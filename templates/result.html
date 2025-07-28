@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>📉 Financial Analysis Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>📉 Your Analysis Results</h1>
+    <p><strong>Savings Rate:</strong> {{ savings_rate }}%</p>
+    <p><strong>Savings Gap:</strong> {{ savings_gap }}%</p>
+
+    {% if overspend %}
+        <div class="alert alert-warning">🚨 Warning: You are likely <strong>overspending</strong>.</div>
+    {% else %}
+
+    
+        <div class="alert alert-success">✅ Good job! You are within your spending limits.</div>
+    {% endif %}
+
+    <div class="chart">{{ bar_chart | safe }}</div>
+    <div class="chart">{{ pie_chart | safe }}</div>
+    <div class="chart">{{ treemap | safe }}</div>
+    <div class="chart">{{ gauge_chart | safe }}</div>
+
+    <div class="conclusion">
+        <h2>📌 Summary & Recommendations</h2>
+        <p>
+            Based on your financial inputs, we analyzed your spending patterns and predicted your actual savings rate as <strong>{{ savings_rate }}%</strong>.
+            {% if overspend %}
+                Our system detected that you are likely <strong>overspending</strong>, especially in discretionary categories. 
+                Consider reducing expenses in areas like <em>eating out</em>, <em>entertainment</em>, or <em>miscellaneous</em> to stay aligned with your savings goals.
+            {% else %}
+                You are managing your expenses wisely and staying within your budget limits. Keep tracking your finances regularly!
+            {% endif %}
+        </p>
+        <p>
+            Your savings gap (difference between your desired and actual savings) is <strong>{{ savings_gap }}%</strong>. 
+            Try to minimize this gap to achieve your financial goals effectively.
+        </p>
+    </div>
+
+    <a href="/" class="back-link">← Back</a>
+</div>
+</body>
+</html>

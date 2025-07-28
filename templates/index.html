@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💼 Personal Financial Advisor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --primary:#007bff;
+      --accent:#28a745;
+      --glass:rgba(255,255,255,0.8);
+      --radius:16px;
+      --heading:#0e2a47;
+    }
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      background:url("{{ url_for('static', filename='img/Financial-Advisors.jpg') }}") center/cover no-repeat fixed;
+    }
+
+    main{
+      flex:1;
+      background:var(--glass);
+      backdrop-filter:blur(6px);
+      padding:60px 16px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+
+    .form-container{
+      width:100%;
+      max-width:980px;
+      background:#fff;
+      border-radius:var(--radius);
+      box-shadow:0 10px 28px rgba(0,0,0,.15);
+      padding:38px 32px 28px;
+    }
+
+    .title{
+      text-align:center;
+      color:var(--heading);
+      margin:0 0 6px;
+      font-weight:600;
+    }
+    .subtitle{
+      text-align:center;
+      color:#666;
+      margin:0 0 28px;
+      font-size:15px;
+      font-weight:500;
+    }
+
+    /* ------- GRID ------- */
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:22px 24px;
+    }
+    @media(max-width:768px){
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .form-group{
+      display:flex;
+      flex-direction:column;
+    }
+    .form-group label{
+      font-size:14px;
+      font-weight:600;
+      margin-bottom:6px;
+      color:#222;
+    }
+    .form-group input,
+    .form-group select{
+      width:100%;
+      padding:11px 12px;
+      border:1px solid #d8d8d8;
+      border-radius:8px;
+      font-size:14px;
+      outline:none;
+      transition:border .2s;
+      background:#fff;
+    }
+    .form-group input:focus,
+    .form-group select:focus{
+      border-color:var(--primary);
+    }
+
+    .submit-wrap{
+      grid-column:1 / -1;
+      margin-top:8px;
+    }
+    .submit-btn{
+      width:100%;
+      border:none;
+      padding:14px 16px;
+      border-radius:10px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+      font-size:17px;
+      cursor:pointer;
+      transition:background .25s, transform .05s;
+    }
+    .submit-btn:hover{
+      background:#1f7e38;
+    }
+    .submit-btn:active{
+      transform:scale(0.995);
+    }
+
+    /* ------- CHAT WIDGET ------- */
+    #chat-toggle-btn{
+      position:fixed;bottom:22px;right:22px;
+      width:56px;height:56px;border-radius:50%;
+      background:var(--primary);color:#fff;font-size:26px;
+      line-height:56px;text-align:center;cursor:pointer;
+      border:none;box-shadow:0 4px 10px rgba(0,0,0,.25);
+      z-index:1200;
+    }
+    #chatbox{
+      position:fixed;bottom:90px;right:22px;
+      width:320px;height:380px;background:#fafafa;
+      border-radius:var(--radius);display:none;
+      flex-direction:column;box-shadow:0 6px 18px rgba(0,0,0,.25);
+      overflow:hidden;z-index:1200;
+    }
+    #messages{
+      flex:1;overflow-y:auto;padding:12px;background:#fff;
+    }
+    .msg{
+      max-width:85%;margin:6px 0;
+      padding:10px 12px;border-radius:var(--radius);
+      font-size:14px;line-height:1.4;word-wrap:break-word;
+    }
+    .msg.user{background:#d1e7ff;margin-left:auto;text-align:right;}
+    .msg.bot{background:#f1f1f1;margin-right:auto;text-align:left;}
+    #chat-input-area{display:flex;border-top:1px solid #ddd;}
+    #chat-input-area input{flex:1;border:none;padding:10px 12px;font-size:14px;}
+    #chat-input-area button{border:none;background:var(--primary);color:#fff;padding:0 18px;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<!-- 💬 Floating Chat Button -->
+<button id="chat-toggle-btn">💬</button>
+
+<!-- 💬 Chat Panel -->
+<div id="chatbox">
+  <div id="messages">
+    <div class="msg bot">👋 Hi! Ask me anything about budgeting, savings, or investments.</div>
+  </div>
+  <div id="chat-input-area">
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button id="send-btn">Send</button>
+  </div>
+</div>
+
+<main>
+  <div class="form-container">
+    <h1 class="title">Personal Financial Advisor</h1>
+    <p class="subtitle">Enter your details to analyze your financial health.</p>
+
+    <form action="/predict" method="post" class="form-grid">
+
+      <div class="form-group">
+        <label>Monthly Income (₹):</label>
+        <input type="number" name="income" required />
+      </div>
+
+      <div class="form-group">
+        <label>Age:</label>
+        <input type="number" name="age" required />
+      </div>
+
+      <div class="form-group">
+        <label>Dependents:</label>
+        <input type="number" name="dependents" required />
+      </div>
+
+      <div class="form-group">
+        <label>Occupation:</label>
+        <select name="occupation">
+          <option value="Professional">Professional</option>
+          <option value="Retired">Retired</option>
+          <option value="Self_Employed">Self-Employed</option>
+          <option value="Student">Student</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>City Tier:</label>
+        <select name="city_tier">
+          <option value="Tier 1">Tier 1</option>
+          <option value="Tier 2">Tier 2</option>
+          <option value="Tier 3">Tier 3</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Desired Savings Percentage (%):</label>
+        <input type="number" name="desired_savings_pct" required />
+      </div>
+
+      <div class="form-group">
+        <label>Rent:</label>
+        <input type="number" name="rent" />
+      </div>
+
+      <div class="form-group">
+        <label>Insurance:</label>
+        <input type="number" name="insurance" />
+      </div>
+
+      <div class="form-group">
+        <label>Transport:</label>
+        <input type="number" name="transport" />
+      </div>
+
+      <div class="form-group">
+        <label>Education:</label>
+        <input type="number" name="education" />
+      </div>
+
+      <div class="form-group">
+        <label>Loan Repayment:</label>
+        <input type="number" name="loan" />
+      </div>
+
+      <div class="form-group">
+        <label>Groceries:</label>
+        <input type="number" name="groceries" />
+      </div>
+
+      <div class="form-group">
+        <label>Eating Out:</label>
+        <input type="number" name="eating_out" />
+      </div>
+
+      <div class="form-group">
+        <label>Entertainment:</label>
+        <input type="number" name="entertainment" />
+      </div>
+
+      <div class="form-group">
+        <label>Utilities:</label>
+        <input type="number" name="utilities" />
+      </div>
+
+      <div class="form-group">
+        <label>Miscellaneous:</label>
+        <input type="number" name="miscellaneous" />
+      </div>
+
+      <div class="submit-wrap">
+        <button type="submit" class="submit-btn">🔍 Analyze</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+  const chatbox = document.getElementById("chatbox");
+  document.getElementById("chat-toggle-btn").onclick = () => {
+    chatbox.style.display = chatbox.style.display === "flex" ? "none" : "flex";
+  };
+
+  document.getElementById("send-btn").onclick = async () => {
+    const inp = document.getElementById("user-input");
+    const text = inp.value.trim();
+    if (!text) return;
+    const msgs = document.getElementById("messages");
+    msgs.innerHTML += `<div class='msg user'>${text}</div>`;
+    msgs.innerHTML += `<div class='msg bot typing'>Typing…</div>`;
+    inp.value = "";
+    const res = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text }),
+    });
+    const data = await res.json();
+    msgs.querySelector(".typing").remove();
+    msgs.innerHTML += `<div class='msg bot'>${data.reply}</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+</script>
+</body>
+</html>
